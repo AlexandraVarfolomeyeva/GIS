@@ -23,16 +23,16 @@ namespace Maps.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<TransformerSubstation> GetAll() //получить все заказы
+        public IEnumerable<TransformerSubstation> GetAll() //получить все 
         {
             try
-            {//возвращаем список всех заказов для текущего пользователя
+            {
                 IEnumerable<TransformerSubstation> b = _context.TransformerSubstation;
                 return b;
             }
             catch (Exception ex)
             {//если что-то пошло не так, выводим исключение в консоль
-                Console.WriteLine("Возникла ошибка при получении списка всех авторов.");
+                Console.WriteLine("Возникла ошибка при получении списка.");
                 return null;
             }
         }

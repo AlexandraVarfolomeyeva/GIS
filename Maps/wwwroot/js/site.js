@@ -1,8 +1,4 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
-ymaps.ready(init);
+﻿ymaps.ready(init);
 const uriSubstations = "/Home/GetAll/";
 let substations = null;
 
@@ -37,9 +33,12 @@ function init() {
         substationsCollection = new ymaps.GeoObjectCollection(null, {
             preset: 'islands#yellowIcon'
         })
-        for (var i = 0, l = subCoordinates.length; i < l; i++) {
-            substationsCollection.add(new ymaps.Placemark(subCoordinates[i]));
-        }
+    for (j in substations) {
+        substationsCollection.add(new ymaps.Placemark([substations[j].coordinatesX, substations[j].coordinatesY], {
+            balloonContent: substations[j].name}));
+
+        balloonContent: 'цвет <strong>влюбленной жабы</strong>'
+    };
        myMap.geoObjects.add(substationsCollection);
    
 }

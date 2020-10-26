@@ -36,8 +36,6 @@ function init() {
     for (j in substations) {
         substationsCollection.add(new ymaps.Placemark([substations[j].coordinatesX, substations[j].coordinatesY], {
             balloonContent: substations[j].name}));
-
-        balloonContent: 'цвет <strong>влюбленной жабы</strong>'
     };
        myMap.geoObjects.add(substationsCollection);
    

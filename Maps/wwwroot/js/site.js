@@ -18,11 +18,6 @@ function getSubstations() {
 
 function init() {
     getSubstations();
-    let subCoordinates=[];
-    for (j in substations) {
-        let coord = [substations[j].coordinatesX, substations[j].coordinatesY]
-        subCoordinates.push(coord);
-    };
 
     var myMap = new ymaps.Map("map", {
         center: [57.001268663457466, 40.973785368007455],
@@ -33,10 +28,32 @@ function init() {
         substationsCollection = new ymaps.GeoObjectCollection(null, {
             preset: 'islands#yellowIcon'
         })
+    myMap.controls.add('zoomControl');
     for (j in substations) {
         substationsCollection.add(new ymaps.Placemark([substations[j].coordinatesX, substations[j].coordinatesY], {
             balloonContent: substations[j].name}));
     };
        myMap.geoObjects.add(substationsCollection);
-   
+
+    // Обработка события, возникающего при щелчке
+    // левой кнопкой мыши в любой точке карты.
+    // При возникновении такого события откроем балун.
+    myMap.events.add('click', function (e) {
+        if (!myMap.balloon.isOpen()) {
+            var coords = e.get('coords');
+            myMap.balloon.open(coords, {
+                contentHeader: 'Событие!',
+                contentBody: '<p>Кто-то щелкнул по карте.</p>' +
+                    '<p>Координаты щелчка: ' + [
+                        coords[0].toPrecision(6),
+                        coords[1].toPrecision(6)
+                    ].join(', ') + '</p>',
+                contentFooter: '<sup>Щелкните еще раз</sup>'
+            });
+        }
+        else {
+            myMap.balloon.close();
+        }
+    });
+
 }

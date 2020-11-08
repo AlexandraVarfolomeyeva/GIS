@@ -1,7 +1,7 @@
 ﻿ymaps.ready(init);
 const uriSubstations = "/Home/GetAll/";
 let substations = null;
-let substation = [], coordinates = [];
+let substation = [], coordinates = [], consumers=[];
 var mark;
 
 function getSubstations() {
@@ -37,6 +37,9 @@ function init() {
     };
     myMap.geoObjects.add(substationsCollection);
 
+    // Обработка события, возникающего при щелчке
+    // левой кнопкой мыши в любой точке карты.
+    // При возникновении такого события откроем балун.
     myMap.events.add('click', function (e) {
         if (!myMap.balloon.isOpen()) { 
         var coords = e.get('coords');
@@ -59,11 +62,12 @@ function init() {
     });
 
  
-    firstButton = new ymaps.control.Button("Разместить подстанцию");
+    firstButton = new ymaps.control.Button("ТП");
     myMap.controls.add(firstButton, { float: 'right' });
 
-    firstButton2 = new ymaps.control.Button("Кнопка2");
+    firstButton2 = new ymaps.control.Button("Потребитель");
     myMap.controls.add(firstButton2, { float: 'right' });
+
     ///добавить координаты подстанции
     firstButton.events.add('click', function (e) {
         myMap.balloon.close();
@@ -77,36 +81,19 @@ function init() {
             })
         myMap.geoObjects.add(mark);
     });
-    firstButton2.events.add('click', function (e){
-       
-        
-   
-    });
-    // Обработка события, возникающего при щелчке
-    // левой кнопкой мыши в любой точке карты.
-    // При возникновении такого события откроем балун.
-   
-}
 
-function getCoordinates(e) {
-    console.log(e);
-    console.log(e.get('coords'));
-    if (!myMap.balloon.isOpen()) {
-        var coords = e.get('coords');
-        substation = [coords[0].toPrecision(6), coords[1].toPrecision(6)];
-        myMap.balloon.open(coords, {
-            contentHeader: 'Событие!',
-            contentBody: '<p>Кто-то щелкнул по карте.</p>' +
-                '<p>Координаты щелчка: ' + [
-                    coords[0].toPrecision(6),
-                    coords[1].toPrecision(6)
-                ].join(', ') + '</p>',
-            contentFooter: '<sup>Щелкните еще раз</sup>'
-        });
-        console.log(substation);
-        myMap.events.remove('click', function (e) { });
-    }
-    else {
+    ///добавить координаты потребителя
+    firstButton2.events.add('click', function (e) {
         myMap.balloon.close();
-    }
+        consumers.push(coordinates);
+        myMap.geoObjects.add(new ymaps.Placemark(coordinates, {
+        balloonContent: 'Потребитель'
+        }, {
+             preset: 'islands#icon',
+                iconColor: '#FF00FF'
+        }));
+        console.log(consumers);
+    });
+
+   
 }

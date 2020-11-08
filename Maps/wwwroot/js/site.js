@@ -1,6 +1,8 @@
 ﻿ymaps.ready(init);
 const uriSubstations = "/Home/GetAll/";
 let substations = null;
+let substation = [], coordinates = [];
+var mark;
 
 function getSubstations() {
     var request2 = new XMLHttpRequest();
@@ -15,11 +17,10 @@ function getSubstations() {
     };
     request2.send();
 }
-
+var myMap;
 function init() {
     getSubstations();
-
-    var myMap = new ymaps.Map("map", {
+    myMap = new ymaps.Map("map", {
         center: [57.001268663457466, 40.973785368007455],
         zoom: 12
     }, {
@@ -31,29 +32,81 @@ function init() {
     myMap.controls.add('zoomControl');
     for (j in substations) {
         substationsCollection.add(new ymaps.Placemark([substations[j].coordinatesX, substations[j].coordinatesY], {
-            balloonContent: substations[j].name}));
+            balloonContent: substations[j].name
+        }));
     };
-       myMap.geoObjects.add(substationsCollection);
+    myMap.geoObjects.add(substationsCollection);
 
+    myMap.events.add('click', function (e) {
+        if (!myMap.balloon.isOpen()) { 
+        var coords = e.get('coords');
+            coordinates = [coords[0].toPrecision(6), coords[1].toPrecision(6)];
+        myMap.balloon.open(coords, {
+            contentHeader: 'Событие!',
+            contentBody: '<p>Для того, чтобы сохранить координаты щелкните по одной из кнопок справа сверху.</p>' +
+                '<p>Координаты щелчка: ' + [
+                    coords[0].toPrecision(6),
+                    coords[1].toPrecision(6)
+                ].join(', ') + '</p>',
+            contentFooter: '<sup>Щелкните еще раз</sup>'
+        });
+            console.log(coordinates);
+        myMap.events.remove('click', function (e) { });
+    }
+    else {
+        myMap.balloon.close();
+    }
+    });
+
+ 
+    firstButton = new ymaps.control.Button("Разместить подстанцию");
+    myMap.controls.add(firstButton, { float: 'right' });
+
+    firstButton2 = new ymaps.control.Button("Кнопка2");
+    myMap.controls.add(firstButton2, { float: 'right' });
+    ///добавить координаты подстанции
+    firstButton.events.add('click', function (e) {
+        myMap.balloon.close();
+        substation = coordinates;
+        if (mark) { myMap.geoObjects.remove(mark); }
+        mark = new ymaps.Placemark(coordinates, {
+            balloonContent: '<strong>Ваша</strong> подстанция'
+        }, {
+                preset: 'islands#icon',
+                iconColor: '#0095b6'
+            })
+        myMap.geoObjects.add(mark);
+    });
+    firstButton2.events.add('click', function (e){
+       
+        
+   
+    });
     // Обработка события, возникающего при щелчке
     // левой кнопкой мыши в любой точке карты.
     // При возникновении такого события откроем балун.
-    myMap.events.add('click', function (e) {
-        if (!myMap.balloon.isOpen()) {
-            var coords = e.get('coords');
-            myMap.balloon.open(coords, {
-                contentHeader: 'Событие!',
-                contentBody: '<p>Кто-то щелкнул по карте.</p>' +
-                    '<p>Координаты щелчка: ' + [
-                        coords[0].toPrecision(6),
-                        coords[1].toPrecision(6)
-                    ].join(', ') + '</p>',
-                contentFooter: '<sup>Щелкните еще раз</sup>'
-            });
-        }
-        else {
-            myMap.balloon.close();
-        }
-    });
+   
+}
 
+function getCoordinates(e) {
+    console.log(e);
+    console.log(e.get('coords'));
+    if (!myMap.balloon.isOpen()) {
+        var coords = e.get('coords');
+        substation = [coords[0].toPrecision(6), coords[1].toPrecision(6)];
+        myMap.balloon.open(coords, {
+            contentHeader: 'Событие!',
+            contentBody: '<p>Кто-то щелкнул по карте.</p>' +
+                '<p>Координаты щелчка: ' + [
+                    coords[0].toPrecision(6),
+                    coords[1].toPrecision(6)
+                ].join(', ') + '</p>',
+            contentFooter: '<sup>Щелкните еще раз</sup>'
+        });
+        console.log(substation);
+        myMap.events.remove('click', function (e) { });
+    }
+    else {
+        myMap.balloon.close();
+    }
 }

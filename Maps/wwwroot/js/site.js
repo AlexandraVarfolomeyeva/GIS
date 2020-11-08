@@ -36,7 +36,7 @@ function init() {
         }));
     };
     myMap.geoObjects.add(substationsCollection);
-
+    
     // Обработка события, возникающего при щелчке
     // левой кнопкой мыши в любой точке карты.
     // При возникновении такого события откроем балун.
@@ -86,6 +86,9 @@ function init() {
     firstButton2.events.add('click', function (e) {
         myMap.balloon.close();
         consumers.push(coordinates);
+        var distance = ymaps.coordSystem.geo.getDistance(coordinates, substation);
+        //var distance = myMap.coordSystem.getDistance(coordinates, substation);
+        console.log("Distance " + distance);
         myMap.geoObjects.add(new ymaps.Placemark(coordinates, {
         balloonContent: 'Потребитель'
         }, {

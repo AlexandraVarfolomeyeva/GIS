@@ -68,6 +68,9 @@ function init() {
     firstButton2 = new ymaps.control.Button("Потребитель");
     myMap.controls.add(firstButton2, { float: 'right' });
 
+    firstButton3 = new ymaps.control.Button("Вычислить");
+    myMap.controls.add(firstButton3, { float: 'right' });
+
     ///добавить координаты подстанции
     firstButton.events.add('click', function (e) {
         myMap.balloon.close();
@@ -86,9 +89,6 @@ function init() {
     firstButton2.events.add('click', function (e) {
         myMap.balloon.close();
         consumers.push(coordinates);
-        var distance = ymaps.coordSystem.geo.getDistance(coordinates, substation);
-        //var distance = myMap.coordSystem.getDistance(coordinates, substation);
-        console.log("Distance " + distance);
         myMap.geoObjects.add(new ymaps.Placemark(coordinates, {
         balloonContent: 'Потребитель'
         }, {
@@ -98,5 +98,31 @@ function init() {
         console.log(consumers);
     });
 
+    ///
+    firstButton3.events.add('click', function (e) {
+        var distance = 0;
+        for (let i = 0; i < consumers.length; i++) {
+            var myGeoObject = new ymaps.GeoObject({
+                // Описываем геометрию геообъекта.
+                geometry: {
+                    // Тип геометрии - "Ломаная линия".
+                    type: "LineString",
+                    // Указываем координаты вершин ломаной.
+                    coordinates: [consumers[i], substation
+                    ]
+                },
+            }, {
+                    // Задаем опции геообъекта.
+                    draggable: false,
+                    // Цвет линии.
+                    strokeColor: "#DBB0FF",
+                    // Ширина линии.
+                    strokeWidth: 5
+                });
+            myMap.geoObjects.add(myGeoObject);
+            distance += ymaps.coordSystem.geo.getDistance(consumers[i], substation);
+        }
+        console.log("Distance " + distance);
+    });
    
 }

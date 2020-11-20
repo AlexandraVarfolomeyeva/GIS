@@ -134,9 +134,14 @@ function init() {
         if (!minimum || minimum >= distance) {
             minimum = distance;
             minCoords = substation;
+            document.getElementById('min').value = minimum;
+            document.getElementById('CoordMin').value = minCoords;
         };
         console.log("Distance: " + distance);
         console.log("Minimum: " + minimum); console.log("Minimum Coord Substation: " + minCoords);
+
+        document.getElementById('current').value = distance;
+        document.getElementById('Coord').value = substation;
     });
    
 }

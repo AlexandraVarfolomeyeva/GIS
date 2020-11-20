@@ -1,8 +1,9 @@
-﻿ymaps.ready(init);
-const uriSubstations = "/Home/GetAll/";
+﻿const uriSubstations = "/Home/GetAll/";
 let substations = null;
 let substation = [], coordinates = [], consumers=[];
-var mark;
+var mark, lines = [];
+let minimum, minCoords;
+var myMap;
 
 function getSubstations() {
     var request2 = new XMLHttpRequest();
@@ -17,10 +18,13 @@ function getSubstations() {
     };
     request2.send();
 }
-var myMap;
+
+// Дождёмся загрузки API и готовности DOM.
+ymaps.ready(init);
+
 function init() {
     getSubstations();
-    myMap = new ymaps.Map("map", {
+    myMap = new ymaps.Map('map', {
         center: [57.001268663457466, 40.973785368007455],
         zoom: 12
     }, {
@@ -30,6 +34,7 @@ function init() {
             preset: 'islands#yellowIcon'
         })
     myMap.controls.add('zoomControl');
+    myMap.container.fitToViewport();
     for (j in substations) {
         substationsCollection.add(new ymaps.Placemark([substations[j].coordinatesX, substations[j].coordinatesY], {
             balloonContent: substations[j].name
@@ -98,9 +103,12 @@ function init() {
         console.log(consumers);
     });
 
-    ///
+    ///вычислить сумму расстояний до ТП и провести линии
     firstButton3.events.add('click', function (e) {
         var distance = 0;
+        for (let i = 0; i < lines.length; i++) {
+            myMap.geoObjects.remove(lines[i]);
+        }
         for (let i = 0; i < consumers.length; i++) {
             var myGeoObject = new ymaps.GeoObject({
                 // Описываем геометрию геообъекта.
@@ -120,9 +128,15 @@ function init() {
                     strokeWidth: 5
                 });
             myMap.geoObjects.add(myGeoObject);
+            lines.push(myGeoObject);
             distance += ymaps.coordSystem.geo.getDistance(consumers[i], substation);
         }
-        console.log("Distance " + distance);
+        if (!minimum || minimum >= distance) {
+            minimum = distance;
+            minCoords = substation;
+        };
+        console.log("Distance: " + distance);
+        console.log("Minimum: " + minimum); console.log("Minimum Coord Substation: " + minCoords);
     });
    
 }

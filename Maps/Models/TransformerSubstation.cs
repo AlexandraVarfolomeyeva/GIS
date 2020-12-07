@@ -21,8 +21,10 @@ namespace Maps.Models
         public int YearFinish { get; set; }//год когда закончили строить
         public int YearDone { get; set; }//год когда вывели из эксплуатации
         public string Name { get; set; }//Название
+        public double Minimum { get; set; }
+        public DateTime? Session { get; set; }
 
-        public int Floors { get; set; }//Этажность
+        public int? Floors { get; set; }//Этажность
         [Required]
         [ForeignKey("Project")]
         public int ProjectId { get; set; }//Проект
@@ -36,9 +38,12 @@ namespace Maps.Models
         public int StateId { get; set; } //Текущий статус - используется ли   
         public virtual State State { get; set; } //Текущий статус - используется ли
 
+        public virtual ICollection<Consumer> Consumers { get; set; }//множество потребителей
         public virtual ICollection<SubstationLines> SubstationLines { get; set; }//множество ЛЭП
+
         public TransformerSubstation()
         {
+            Consumers = new HashSet<Consumer>();
             SubstationLines = new HashSet<SubstationLines>();
         }
     }

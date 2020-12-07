@@ -1,9 +1,11 @@
-﻿const uriSubstations = "/Home/GetAll/";
+﻿const uriAddMinimum = "/Home/addMinimum/";
+const uriSubstations = "/Home/GetAll/";
+const uriUpdateMinimum = "/Home/UpdateMinimum/";
 let substations = null;
 let substation = [], coordinates = [], consumers=[];
 var mark, lines = [];
 let minimum, minCoords;
-var myMap;
+var myMap,TSid=-1;
 
 function getSubstations() {
     var request2 = new XMLHttpRequest();
@@ -136,6 +138,40 @@ function init() {
             minCoords = substation;
             document.getElementById('min').value = minimum;
             document.getElementById('CoordMin').value = minCoords;
+            var min = {
+                'id': TSid,
+                'coordX': substation[0],
+                'coordY': substation[1],
+                'value': minimum,
+                'subAddress': "",
+                'consCoord': consumers
+            };
+            if (TSid == -1) {
+                var request = new XMLHttpRequest();
+                request.open("POST", uriAddMinimum);
+                request.onload = function () {
+                    // Обработка кода ответа
+                    if (request.status === 200) {
+                        TSid = Number.parseInt(request.response);
+                    }
+                };
+                request.setRequestHeader("Accepts", "application/json;charset=UTF-8");
+                request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                request.send(JSON.stringify(min));//добавление строки заказа
+            } else {
+                var request = new XMLHttpRequest();
+                request.open("PUT", uriUpdateMinimum);
+                request.onload = function () {
+                    // Обработка кода ответа
+                    if (request.status === 200) {
+                        Console.log("Updated to db")
+                    }
+                };
+                request.setRequestHeader("Accepts", "application/json;charset=UTF-8");
+                request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                request.send(JSON.stringify(min));//добавление строки заказа
+            }
+           
         };
         console.log("Distance: " + distance);
         console.log("Minimum: " + minimum); console.log("Minimum Coord Substation: " + minCoords);

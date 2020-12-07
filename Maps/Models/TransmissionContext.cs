@@ -25,6 +25,7 @@ namespace Maps.Models
         public virtual DbSet<Topology> Topology { get; set; }
         public virtual DbSet<SubstationLines> SubstationLines { get; set; }
         public virtual DbSet<TypeOfCurrent> TypeOfCurrent { get; set; }
+        public virtual DbSet<Consumer> Consumers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder
         modelBuilder)
@@ -33,6 +34,7 @@ namespace Maps.Models
             modelBuilder.Entity<TransformerSubstation>(entity =>
             {
                 entity.HasMany(a => a.SubstationLines).WithOne(a => a.TransformerSubstation).HasForeignKey(a => a.TransformerSubstationId);
+                entity.HasMany(a => a.Consumers).WithOne(a => a.TS).HasForeignKey(a => a.SubstationId);
                 entity.HasOne(a => a.Project).WithMany(a => a.TransformerSubstations).HasForeignKey(a => a.ProjectId);
                 entity.HasOne(a => a.State).WithMany(a => a.TransformerSubstations).HasForeignKey(a => a.StateId);
                 entity.HasOne(a => a.Builder).WithMany(a => a.TransformerSubstations).HasForeignKey(a => a.BuilderId);
@@ -46,11 +48,10 @@ namespace Maps.Models
                 entity.HasOne(a => a.ParallelCircuits).WithMany(a => a.TransmissionLines).HasForeignKey(a => a.ParallelCircuitsId);
                 entity.HasOne(a => a.FunctionalPurpose).WithMany(a => a.TransmissionLines).HasForeignKey(a => a.FunctionalPurposeId);
             });
-            //modelBuilder.Entity<SubstationLines>(entity =>
-            //{
-            //    entity.HasOne(a => a.TransmissionLine).WithMany(a => a.SubstationLines).HasForeignKey(a => a.TransmissionLineId);
-            //    entity.HasOne(a => a.TransformerSubstation).WithMany(a => a.SubstationLines).HasForeignKey(a => a.TransformerSubstationId);
-            //});
+            modelBuilder.Entity<Consumer>(entity =>
+            {
+                entity.HasOne(a => a.TS).WithMany(a => a.Consumers).HasForeignKey(a => a.SubstationId);
+            });
         }
 }
 }
